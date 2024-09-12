@@ -2,6 +2,7 @@
 #include "../include/queue_manager.h"
 #include "../include/ssd_detector.h"
 #include "../include/ml_predictor.h"
+#include "../include/wear_leveling.h"
 
 #define DEFAULT_QUEUE_DEPTH 32
 #define MIN_QUEUE_DEPTH 1
@@ -39,9 +40,11 @@ void set_queue_depth(unsigned int new_depth)
     current_queue_depth = new_depth;
 }
 
-void process_io_request(int32_t io_size)
+void process_io_request(bool is_write, int32_t io_size)
 {
     record_io_event(io_size);
+    update_io_stats(is_write, io_size);
+    
     int32_t predicted_size = predict_next_io_size();
     
     // Simple adaptive logic: increase queue depth for larger I/Os
@@ -49,5 +52,10 @@ void process_io_request(int32_t io_size)
         set_queue_depth(current_queue_depth + 1);
     else if (predicted_size < 4096) // 4KB
         set_queue_depth(current_queue_depth - 1);
+
+    if (is_write && should_redirect_write()) {
+        pr_info("Redirecting write for wear leveling\n");
+        // TODO: Implement actual write redirection logic
+    }
 }
 

@@ -7,11 +7,12 @@
 
 #include "../include/ssd_detector.h"
 #include "../include/queue_manager.h"
+#include "../include/ml_predictor.h"
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Fayssal CHOKRI");
 MODULE_DESCRIPTION("NVMe Adaptive I/O Scheduler");
-MODULE_VERSION("0.1");
+MODULE_VERSION("0.2");
 
 static int __init nvme_adaptive_io_init(void)
 {
@@ -22,8 +23,15 @@ static int __init nvme_adaptive_io_init(void)
         return -EINVAL;
     }
 
+    if (init_ml_predictor() < 0) {
+        pr_err("Failed to initialize ML predictor\n");
+        cleanup_ssd_detector();
+        return -EINVAL;
+    }
+
     if (init_queue_manager() < 0) {
         pr_err("Failed to initialize queue manager\n");
+        cleanup_ml_predictor();
         cleanup_ssd_detector();
         return -EINVAL;
     }
@@ -36,6 +44,7 @@ static void __exit nvme_adaptive_io_exit(void)
 {
     pr_info("NVMe Adaptive I/O Scheduler: Exiting\n");
     cleanup_queue_manager();
+    cleanup_ml_predictor();
     cleanup_ssd_detector();
 }
 

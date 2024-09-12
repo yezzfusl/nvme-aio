@@ -2,12 +2,18 @@
 
 This kernel module implements an intelligent I/O scheduler optimized for modern NVMe SSDs. It uses machine learning techniques to predict I/O patterns, dynamically adjust queue depths, and manage wear leveling.
 
-## Features (TODO)
+## Features
 
-- Machine learning-based I/O pattern prediction
+- Basic NVMe SSD detection
 - Dynamic queue depth adjustment
-- Adaptive wear-leveling strategies
-- Support for various NVMe SSD architectures
+- Simple machine learning-based I/O pattern prediction
+- Adaptive scheduling based on predicted I/O sizes
+
+## TODO
+
+- Implement advanced wear-leveling strategies
+- Enhance ML model for better I/O prediction
+- Add support for various NVMe SSD architectures
 
 ## Building and Installing
 
@@ -23,7 +29,12 @@ To remove the module:
 
 `sudo rmmod nvme_adaptive_io`
 
-## Licence 
+## Testing 
+After loading the module, you can check the kernel log for initialization messages:
+
+`dmesg | tail` or `sudo dmesg | tail`
+
+## Licence
 This project is licensed under the GPL License.
 
 
